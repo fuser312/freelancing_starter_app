@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'loading_screen.dart';
+import 'ad_manager.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +10,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  BannerAd _bannerAd;
+
+  void _loadBannerAd() {
+    _bannerAd
+      ..load()
+      ..show(anchorType: AnchorType.top);
+  }
+
   String _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   Future<void> _selectDate(BuildContext context) async {
@@ -28,7 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      size: AdSize.banner,
+    );
+
+    // TODO: Load a Banner Ad
+    _loadBannerAd();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: Dispose BannerAd object
+    _bannerAd?.dispose();
+
+
+    super.dispose();
   }
 
   @override
@@ -52,17 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 32,),
               RaisedButton(
                 child: Text("Choose Date", style: TextStyle(fontSize: 18),),
-                onPressed: () async {
-                  await _selectDate(context);
-                  print("selected Date is " + _selectedDate);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoadingScreen(
-                              selectedDate: _selectedDate,
-                            )),
-                  );
-                },
+                onPressed: _loadBannerAd
               )
             ],
           ),
